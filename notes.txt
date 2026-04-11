@@ -1,0 +1,10 @@
+1. Schemas:
+    user -> fullname, email, password, role, designation in case of staff, student in case of parent
+    student
+    attendance
+    chat
+    session
+
+2. architecture
+    admin -> only 1 account
+    staff & parent -> only admin can create it
