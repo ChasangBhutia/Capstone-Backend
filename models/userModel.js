@@ -1,28 +1,5 @@
 const mongoose = require('mongoose');
 
-const StudentSchema = new mongoose.Schema({
-    studentName:{
-        type:String,
-        required:true
-    },
-    assignments:[{
-        title:String,
-        marks:Number,
-        submitted: Boolean
-    }],
-    activities: [{
-        name:String,
-        score:Number
-    }],
-    attendance: {
-        type:Number,
-        default:0
-    },
-    class: String,
-    roll: Number,
-    descriptors: [[Number]]
-})
-
 const User = new mongoose.Schema({
     role:{
         type:String,
@@ -44,7 +21,8 @@ const User = new mongoose.Schema({
     },
     branch:String,
     student: {
-        type: [StudentSchema],
+        type: [mongoose.Schema.Types.ObjectId],
+        ref:'user',
         default: undefined
     }
 })
