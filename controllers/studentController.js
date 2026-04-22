@@ -2,19 +2,16 @@ const Student = require('../models/studentModel');
 
 module.exports.getAllStudents = async (req, res) => {
     const sClass = req.query.sClass || req.body.sClass;
-    if (!sClass) {
-        console.error("Class is required");
-        return res.status(404).json({ success: false, message: "Class is required" });
-    }
     try {
-        const students = await Student.find({ class: sClass });
+        const query = sClass ? { class: sClass } : {};
+        const students = await Student.find(query);
+
         if (students.length === 0) {
-            console.error("No students found");
-            return res.status(404).json({ success: false, message: "No students found" });
+            return res.status(200).json({ success: true, message: "No students found", students: [] });
         }
         res.status(200).json({
             success: true,
-            message: "Students found",
+            message: "Students fetched",
             students,
         });
     } catch (err) {

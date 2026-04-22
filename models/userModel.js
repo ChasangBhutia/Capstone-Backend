@@ -24,6 +24,11 @@ const User = new mongoose.Schema({
         type: [mongoose.Schema.Types.ObjectId],
         ref:'user',
         default: undefined
+    },
+    location: {
+        x: { type: Number, default: 0 },
+        y: { type: Number, default: 0 },
+        lastUpdated: { type: Date, default: Date.now }
     }
 })
 

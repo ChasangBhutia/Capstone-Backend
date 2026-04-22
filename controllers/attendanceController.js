@@ -6,7 +6,7 @@ module.exports.markAttendance = async (req, res) => {
     try {
         const { descriptor, subject, studentClass } = req.body;
         // 1. Get all students
-        const students = await Student.find({ class: 'ten' });
+        const students = await Student.find({ class: '10' });
         if (!students) {
             console.error("No students found");
             return res.status(404).json({ success: false, message: "No students found" });
@@ -20,17 +20,19 @@ module.exports.markAttendance = async (req, res) => {
         }
 
         // 3. Prevent duplicate (same day + subject)
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
 
         const alreadyMarked = await Attendance.findOne({
             student: matchedStudent._id,
-            date: today,
+            date: { $gte: startOfDay, $lte: endOfDay },
         });
 
         if (alreadyMarked) {
             console.error("Already marked")
-            return res.json({
+            return res.status(400).json({
                 success: false,
                 message: "Already marked today",
                 student: matchedStudent.studentName,
@@ -42,7 +44,7 @@ module.exports.markAttendance = async (req, res) => {
             student: matchedStudent._id,
             status: "present",
             teacher: req.user?._id, // if using auth middleware
-            date: today
+            date: new Date()
         });
 
         res.status(200).json({
@@ -70,12 +72,14 @@ module.exports.saveAttendance = async (req, res) => {
             console.error("No students found");
             return res.status(404).json({ success: false, message: "No students found" });
         }
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
 
         const presentStudents = await Attendance.find({
             student: { $in: students.map(s => s._id) },
-            date: today,
+            date: { $gte: startOfDay, $lte: endOfDay },
             status: "present"
         });
 
@@ -86,7 +90,7 @@ module.exports.saveAttendance = async (req, res) => {
                 student: s._id,
                 status: "absent",
                 teacher: req.user?._id,
-                date: today
+                date: new Date()
             }))
         );
 

@@ -1,18 +1,34 @@
 const chatModel = require("../models/chatModel");
 const sessionModel = require("../models/sessionModel");
 const { callMistral } = require('../utils/openRouter');
+const Student = require("../models/studentModel");
 
 exports.saveChat = async (req, res) => {
     try {
         const { sessionId, prompt } = req.body;
         if (!sessionId || !prompt) return res.status(400).json({ success: false, errors: "All fields are required" });
+
+        // 1. Fetch Real-time Context from Database
+        const students = await Student.find({}).lean();
+        
+        // 2. Format Context for AI
+        const studentContext = students.map(s => (
+            `Name: ${s.studentName}, Class: ${s.class}, Roll: ${s.roll}, Bus: ${s.bus || 'N/A'}. ` +
+            `Performance: ${s.activities?.length || 0} activities, ${s.assignments?.length || 0} assignments.`
+        )).join('\n');
+
         const message = [
             {
                 role: "system",
                 content:
-                    "You are a professional Student Safety Consultant. Tell about the best safety rules, tips and tricks of safety rules of students mainly at school" +
-                    "Reply with calm and a proper manner and be gentle. " +
-                    "Tell each in detail and try to e explain in points and by giving examples"
+                    "You are a professional Student Safety and Academic Consultant at SafeRoute. " +
+                    "You have access to the following live student records from the database:\n" +
+                    studentContext + "\n\n" +
+                    "Guidelines:\n" +
+                    "1. If a user asks about a specific student, use the provided records.\n" +
+                    "2. If the student is not found, politely state you don't have records for that individual.\n" +
+                    "3. Provide safety tips and academic advice based on the student's background if possible.\n" +
+                    "4. Be professional, gentle, and answer in points."
             },
             {
                 role: "user",

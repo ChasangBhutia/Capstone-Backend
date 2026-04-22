@@ -43,7 +43,9 @@ module.exports.createUser = async (req, res) => {
                 student.map(s => ({
                     studentName: s.name,
                     class: s.class,
-                    descriptors: descriptor ? descriptor : []
+                    roll: s.roll,
+                    bus: s.bus,
+                    descriptors: s.descriptor ? s.descriptor : (descriptor ? descriptor : [])
                 }))
             );
 
@@ -118,4 +120,26 @@ module.exports.login = async (req, res) => {
         console.error("Something went wrong: ", err.message);
         return res.status(500).json({ success: false, error: "Internal Server Error." });
     }
+}
+
+module.exports.getUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).json({ success: false, error: "User not found" });
+        }
+        return res.status(200).json({ success: true, user });
+    } catch (err) {
+        console.error("Something went wrong: ", err.message);
+        return res.status(500).json({ success: false, error: "Internal Server Error." });
+    }
+}
+
+module.exports.logout = async (req, res) => {
+    res.cookie('token', '', {
+        httpOnly: true,
+        expires: new Date(0),
+        path: '/'
+    });
+    return res.status(200).json({ success: true, message: "Logged out successfully" });
 }

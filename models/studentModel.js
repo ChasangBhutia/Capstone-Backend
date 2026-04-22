@@ -16,7 +16,8 @@ const StudentSchema = new mongoose.Schema({
     }],
     class: String,
     roll: Number,
-    descriptors: [Number]
+    descriptors: [Number],
+    bus: String
 })
 
 module.exports = mongoose.model('student', StudentSchema)
