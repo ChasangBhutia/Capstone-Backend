@@ -1,9 +1,10 @@
 const Student = require('../models/studentModel');
+const User = require('../models/userModel');
 
 module.exports.getAllStudents = async (req, res) => {
-    const sClass = req.query.sClass || req.body.sClass;
     try {
-        const query = sClass ? { class: sClass } : {};
+        const currentUser = await User.findById(req.user._id);
+        const query = currentUser && currentUser.teacherOf ? { class: currentUser.teacherOf } : {};
         const students = await Student.find(query);
 
         if (students.length === 0) {

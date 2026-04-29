@@ -11,6 +11,7 @@ module.exports.createUser = async (req, res) => {
         password,
         role,
         branch,
+        teacherOf,
         student,
         descriptor
     } = req.body;
@@ -61,6 +62,9 @@ module.exports.createUser = async (req, res) => {
 
         if (role === "staff") {
             userData.branch = branch;
+            if (teacherOf) {
+                userData.teacherOf = teacherOf;
+            }
         }
 
         if (role === "parent") {

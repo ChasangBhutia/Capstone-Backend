@@ -1,28 +1,29 @@
 const mongoose = require('mongoose');
 
 const User = new mongoose.Schema({
-    role:{
-        type:String,
-        enum:['parent', 'staff', 'admin'],
-        required:true
-    },
-    fullname:{
+    role: {
         type: String,
-        required:true
+        enum: ['parent', 'staff', 'admin'],
+        required: true
     },
-    email:{
-        type:String,
-        unique:true,
-        required:true
+    fullname: {
+        type: String,
+        required: true
     },
-    password:{
-        type:String,
-        required:true
+    email: {
+        type: String,
+        unique: true,
+        required: true
     },
-    branch:String,
+    password: {
+        type: String,
+        required: true
+    },
+    branch: String,
+    teacherOf: String,
     student: {
         type: [mongoose.Schema.Types.ObjectId],
-        ref:'user',
+        ref: 'user',
         default: undefined
     },
     location: {
@@ -32,4 +33,4 @@ const User = new mongoose.Schema({
     }
 })
 
-module.exports = mongoose.model('user',User)
+module.exports = mongoose.model('user', User)
