@@ -125,3 +125,25 @@ module.exports.getStudentAttendance = async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 }
+
+module.exports.getAttendance = async (req, res) => {
+    try {
+        console.log(req.user._id);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        const attendance = await Attendance.find({
+            date: { $gte: today, $lt: tomorrow },
+            teacher: req.user?._id || ""
+        }).populate("student");
+        res.status(200).json({
+            success: true,
+            message: "Attendance found",
+            attendance,
+        });
+    } catch (error) {
+        console.error("Something went wrong: ", error)
+        res.status(500).json({ success: false, error: error.message });
+    }
+}

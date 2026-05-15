@@ -27,7 +27,7 @@ const server = http.createServer(app);
 // Initialize Socket.IO
 const io = new Server(server, {
     cors: {
-        origin: 'https://capstone-frontend-tan-sigma.vercel.app',
+        origin: ['https://capstone-frontend-tan-sigma.vercel.app', 'http://localhost:5173', 'https://localhost', 'capacitor://localhost'],
         credentials: true
     }
 });
@@ -37,8 +37,10 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(cookieParser());
 app.use(cors({
-    origin: 'https://capstone-frontend-tan-sigma.vercel.app',
-    credentials: true
+    origin: ['https://capstone-frontend-tan-sigma.vercel.app', 'http://localhost:5173', 'http://localhost', 'capacitor://localhost'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // API Routes
