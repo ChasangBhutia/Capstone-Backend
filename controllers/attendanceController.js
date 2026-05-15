@@ -137,10 +137,14 @@ module.exports.getAttendance = async (req, res) => {
             date: { $gte: today, $lt: tomorrow },
             teacher: req.user?._id || ""
         }).populate("student");
+
+        // Filter out records where the student was not found (e.g., student was deleted)
+        const validAttendance = attendance.filter(a => a.student !== null);
+
         res.status(200).json({
             success: true,
             message: "Attendance found",
-            attendance,
+            attendance: validAttendance,
         });
     } catch (error) {
         console.error("Something went wrong: ", error)
